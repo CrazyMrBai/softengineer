@@ -97,12 +97,13 @@ public class HomeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-        regUtils = new RegUtils(getActivity());
+
         mTakePhoto = (Button) view.findViewById(R.id.ho_photo_id);
         mChoosePhoto = (Button) view.findViewById(R.id.ho_album_id);
         picture = (ImageView) view.findViewById(R.id.ho_imageView);
         resbox = (TextView)view.findViewById(R.id.ho_res_box);
         runtimebox = (TextView)view.findViewById(R.id.ho_runtime_box);
+        regUtils = new RegUtils(getActivity(),resbox,runtimebox,picture);
         mTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,16 +170,12 @@ public class HomeFragment extends Fragment {
                     try {
                         Log.d("MainmenuActivity","try1");
                         Bitmap bitmap=BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(imageUri));
-                        Log.d("MainmenuActivity","try2");
                         // Bitmap bmp = BitmapFactory.decodeStream(xiangji_cr.openInputStream(xiangji_uri)
                         bitmap = regUtils.roatePic(bitmap,90);
-                        Log.d("MainmenuActivity","try3");
                         picture.setImageBitmap(bitmap);
-                        String test;
 
-                        Log.d("MainmenuActivity","try4");
+                        regUtils.simpleRecog(bitmap);
                         //Toast.makeText(VideoActivity.this,"jhjj",Toast.LENGTH_LONG).show();
-                        Log.d("MainmenuActivity",regUtils.simpleRecog(bitmap));
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -190,6 +187,7 @@ public class HomeFragment extends Fragment {
                 if (resultCode == -1) {
                     if (Build.VERSION.SDK_INT >= 19) {  //4.4及以上的系统使用这个方法处理图片；
                         regUtils.handleImageOnKitKat(data);
+
                     } else {
                         regUtils.handleImageBeforeKitKat(data);  //4.4及以下的系统使用这个方法处理图片
                     }

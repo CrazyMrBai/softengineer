@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -39,53 +40,33 @@ public class RegUtils {
 
     private long handle;
     private Context context;
+    private TextView resBox;
+    private TextView runtimeBox;
+    private ImageView picture;
 
 
-
-    public RegUtils(Context context) {
+    public RegUtils(Context context,TextView resBox,TextView runtimeBox,ImageView picture) {
 
         this.context = context;
 
-        this.initRecognizer();
-    }
+        {
 
+            if(OpenCVLoader.initDebug())
+            {
+                Log.d("Opencv","opencv load_success");
 
-    //解析图片
-    public static Bitmap decodeImage(String path) {
-        Bitmap res;
-        try {
-            ExifInterface exif = new ExifInterface(path);
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
-            BitmapFactory.Options op = new BitmapFactory.Options();
-            op.inSampleSize = 1;
-            op.inJustDecodeBounds = false;
-            //op.inMutable = true;
-            res = BitmapFactory.decodeFile(path, op);
-            //rotate and scale.
-            Matrix matrix = new Matrix();
-
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-                matrix.postRotate(90);
-            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-                matrix.postRotate(180);
-            } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-                matrix.postRotate(270);
             }
+            else
+            {
+                Log.d("Opencv","opencv can't load opencv .");
 
-            Bitmap temp = Bitmap.createBitmap(res, 0, 0, res.getWidth(), res.getHeight(), matrix, true);
-            Log.d("com.arcsoft", "check target Image:" + temp.getWidth() + "X" + temp.getHeight());
-
-            if (!temp.equals(res)) {
-                res.recycle();
             }
-            return temp;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return null;
+        this.initRecognizer();
+        this.resBox = resBox;
+        this.runtimeBox = runtimeBox;
+        this.picture = picture;
     }
-
 
 
     //旋转角度
@@ -154,6 +135,7 @@ public class RegUtils {
             imagePath = uri.getPath();
 
         }
+        displayImage(imagePath);
 
     }
 
@@ -197,8 +179,20 @@ public class RegUtils {
     public void handleImageBeforeKitKat(Intent data) {
         Uri uri = data.getData();
         String imagePath = getImagePath(uri, null);
+        displayImage(imagePath);
     }
 
+
+    private void displayImage(String imagePath) {
+        if (imagePath != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+            picture.setImageBitmap(bitmap);
+
+            simpleRecog(bitmap);
+        } else {
+            Log.d("display", "can not displayImage: ");
+        }
+    }
     public void initRecognizer()
     {
         String assetPath = "pr";
@@ -227,30 +221,32 @@ public class RegUtils {
         );
 
     }
-    public  String simpleRecog(Bitmap bmp)
+    public  void simpleRecog(Bitmap bmp)
     {
         //ast.makeText(VideoActivity.this,"11",Toast.LENGTH_LONG).show();
-        Log.d("MainmenuActivity","try_reg0");
+
         float dp_asp  = 0.1f;
 //        Mat mat_src = new Mat(bmp.getWidth(), bmp.getHeight(), CvType.CV_8UC1);
 
-        Log.d("MainmenuActivity","bmp" + bmp.getWidth()+"  "+bmp.getHeight());
+
         Mat mat_src = new Mat(5, 5, CvType.CV_8UC4);
-        Log.d("MainmenuActivity","try_reg01");
+
         float new_w = bmp.getWidth()*dp_asp;
         float new_h = bmp.getHeight()*dp_asp;
         Size sz = new Size(new_w,new_h);
-        Log.d("MainmenuActivity","try_reg1");
+
         Utils.bitmapToMat(bmp, mat_src);
-        Log.d("MainmenuActivity","try_reg2");
+
         Imgproc.resize(mat_src,mat_src,sz);
-        Log.d("MainmenuActivity","try_reg3");
+
         long currentTime1 = System.currentTimeMillis();
-        Log.d("MainmenuActivity","try_reg4");
+
+
         String res = PlateRecognition.SimpleRecognization(mat_src.getNativeObjAddr(),handle);
-        Log.d("MainmenuActivity","try_reg5");
         long diff = System.currentTimeMillis() - currentTime1;
-        return res + String.valueOf(diff)+"ms";
+
+        resBox.setText("识别结果:"+res);
+        runtimeBox.setText(String.valueOf(diff)+"ms");
 
     }
 
