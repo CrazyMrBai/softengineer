@@ -1,0 +1,4 @@
+ndk:android-ndk-r14b
+ADK - Android7.1.1
+ADK - Android9.0
+其他配置只要是最新的android studio 我都配好了
