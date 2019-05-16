@@ -1,4 +1,5 @@
 ndk:android-ndk-r14b
 ADK - Android7.1.1
 ADK - Android9.0
-ÆäËûÅäÖÃÖ»ÒªÊÇ×îĞÂµÄandroid studio ÎÒ¶¼ÅäºÃÁË
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö»Òªï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½android studio ï¿½Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+'--------'
