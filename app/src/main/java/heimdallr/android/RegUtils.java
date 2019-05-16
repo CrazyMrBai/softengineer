@@ -245,7 +245,7 @@ public class RegUtils {
         String res = PlateRecognition.SimpleRecognization(mat_src.getNativeObjAddr(),handle);
         long diff = System.currentTimeMillis() - currentTime1;
 
-        resBox.setText("识别结果:"+res);
+        resBox.setText("识别结果为:"+res);
         runtimeBox.setText(String.valueOf(diff)+"ms");
 
     }
